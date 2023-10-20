@@ -1,28 +1,48 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { selectCharacters } from "../../../redux/slices/characters/charactersSlice";
 import { fetchCharacters } from "../../../redux/slices/characters/charactersActions";
+import { ECharacter } from "../../../enum/character.enum";
+import Card from "../../reusable-ui/Card";
+import styled from "styled-components";
+import { resetIndex } from "./helpers/reset.helper";
 
-// JSX STYLE (STYLED-COMPONENTS)
-
-// COMPONENT
 const MainPage: FC = () => {
-  // STATE
   const { characters } = useAppSelector(selectCharacters);
+  const [characterIndex, setCharacterIndex] = useState(ECharacter.INDEX);
 
   const dispatch = useAppDispatch();
 
-  // STOCK DATA AND REFERENCE
-  const character = characters[0];
+  const character = characters[characterIndex];
 
-  // BEHAVIOR
   useEffect(() => {
     dispatch(fetchCharacters());
     // eslint-disable-next-line
   }, []);
 
-  // JSX
-  return <div>{character?.fullName}</div>;
+  const handleClick = () => {
+    const newIndex = resetIndex(characterIndex, characters);
+    setCharacterIndex(newIndex);
+  };
+
+  return (
+    <MainPageStyled>
+      <Card
+        fullName={character?.fullName}
+        imageUrl={character?.imageUrl}
+        onClick={handleClick}
+        indexPosition={characterIndex}
+      />
+    </MainPageStyled>
+  );
 };
+
+const MainPageStyled = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default MainPage;
